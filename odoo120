@@ -1,0 +1,60 @@
+upstream odoo {
+ server 127.0.0.1:12073;
+}
+
+upstream odoo-chat {
+ server 127.0.0.1:12072;
+}
+
+server {
+    server_name brindsoft.tk;
+    return 301 https://brindsoft.tk$request_uri;
+}
+
+server {
+   listen 443 ssl http2;
+   server_name brindsoft.tk;
+
+   ssl_certificate           /etc/letsencrypt/live/brindsoft.tk/fullchain.pem;
+   ssl_certificate_key       /etc/letsencrypt/live/brindsoft.tk/privkey.pem;
+   ssl_session_timeout 1d;
+   ssl_session_cache shared:SSL:50m;
+   ssl_session_tickets off;
+
+   add_header Strict-Transport-Security max-age=15768000;
+
+   ssl_stapling on;
+   ssl_stapling_verify on;
+   resolver 8.8.8.8 8.8.4.4;
+
+   access_log /var/log/nginx/odoo.access.log;
+   error_log /var/log/nginx/odoo.error.log;
+
+   proxy_read_timeout 720s;
+   proxy_connect_timeout 720s;
+   proxy_send_timeout 720s;
+   proxy_set_header X-Forwarded-Host $host;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   proxy_set_header X-Real-IP $remote_addr;
+
+   location / {
+     proxy_redirect off;
+     proxy_pass http://odoo;
+   }
+
+   location /longpolling {
+       proxy_pass http://odoo-chat;
+   }
+
+   location ~* /web/static/ {
+       proxy_cache_valid 200 90m;
+       proxy_buffering    on;
+       expires 864000;
+       proxy_pass http://odoo;
+  }
+
+  # gzip
+  gzip_types text/css text/less text/plain text/xml application/xml application/json application/javascript;
+  gzip on;
+}
