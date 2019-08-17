@@ -1,8 +1,8 @@
-upstream odoo {
+upstream odoo110 {
  server 127.0.0.1:11073;
 }
 
-upstream odoo-chat {
+upstream odoo110-chat {
  server 127.0.0.1:11072;
 }
 
@@ -40,18 +40,18 @@ server {
 
    location / {
      proxy_redirect off;
-     proxy_pass http://odoo;
+     proxy_pass http://odoo110;
    }
 
    location /longpolling {
-       proxy_pass http://odoo-chat;
+       proxy_pass http://odoo110-chat;
    }
 
    location ~* /web/static/ {
        proxy_cache_valid 200 90m;
        proxy_buffering    on;
        expires 864000;
-       proxy_pass http://odoo;
+       proxy_pass http://odoo110;
   }
 
   # gzip
