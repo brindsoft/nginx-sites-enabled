@@ -1,0 +1,130 @@
+upstream oddo_110{
+    server 127.0.0.1:11073;
+}
+
+server {
+    server_name  template-bluebox.brindsoft.com
+		 template-bluebox-licitacoes.brindsoft.com
+		 bluebox-teste.brindsoft.com
+		 bluebox-licitacoes-teste.brindsoft.com
+		 bluebox-11.brindsoft.com
+		 bluebox-licitacoes-11.brindsoft.com;
+
+    add_header Strict-Transport-Security max-age=2592000;
+
+
+    access_log  /var/log/nginx/oddo110.access.log;
+    error_log   /var/log/nginx/oddo110.error110.log;
+
+    keepalive_timeout   60;
+
+
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+
+    location / {
+        proxy_pass  http://oddo_110;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_redirect off;
+
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto https;
+    }
+
+    location ~* /web/static/ {
+        proxy_cache_valid 200 60m;
+        proxy_buffering on;
+        expires 864000;
+        proxy_pass http://oddo_110;
+    }
+
+
+
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/bluebox.brindsoft.com-0001/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/bluebox.brindsoft.com-0001/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+server {
+    if ($host = template-bluebox-licitacoes.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = template-bluebox.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = bluebox-teste.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = bluebox-licitacoes-teste.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = bluebox-licitacoes-11.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = bluebox-11.brindsoft.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name  template-bluebox.brindsoft.com
+		 template-bluebox-licitacoes.brindsoft.com
+		 bluebox-teste.brindsoft.com
+		 bluebox-licitacoes-teste.brindsoft.com
+		 bluebox-11.brindsoft.com
+		 bluebox-licitacoes-11.brindsoft.com;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+
+
+
+
+
+
+
+
+
+
+}

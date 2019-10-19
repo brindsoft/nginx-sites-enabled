@@ -7,13 +7,13 @@ upstream odoo120-chat {
 }
 
 server {
-    server_name brindsoft.com;
+    include /etc/nginx/domains/odoo120;
     return 301 https://$host$request_uri;
 }
 ######### editorialhav.com #############
 server {
    listen 443 ssl http2;
-   server_name editorialhav.com;
+   server_name editorialhav.com default_server;
 
    ssl_certificate           /etc/letsencrypt/live/editorialhav.com/fullchain.pem;
    ssl_certificate_key       /etc/letsencrypt/live/editorialhav.com/privkey.pem;
@@ -61,7 +61,7 @@ server {
 ######### brindsoft.com #############
 server {
    listen 443 ssl http2 default_server;
-   server_name brindsoft.com;
+   include /etc/nginx/domains/odoo120;
 
    ssl_certificate           /etc/letsencrypt/live/brindsoft.com/fullchain.pem;
    ssl_certificate_key       /etc/letsencrypt/live/brindsoft.com/privkey.pem;
